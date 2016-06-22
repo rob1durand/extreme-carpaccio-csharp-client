@@ -22,7 +22,7 @@ namespace xCarpaccio.client
                 }
 
                 var order = this.Bind<Order>();
-                Bill bill = null;
+                Bill bill = new Bill { total = 0 };
                 //TODO: do something with order and return a bill if possible
                 try
                 {
@@ -57,62 +57,24 @@ namespace xCarpaccio.client
                         { "LU", 25 },
                         { "MT", 20 }
                     };
+                    
+                    bill = CalculMttTotArt(bill, order);
 
-                    var tva = 0;
-                    if (taxesDictionary.ContainsKey(order.Country))
-                    {
-                        tva = taxesDictionary[order.Country]; //get the tva for the country
-                    }
-                       
-                    bill = new Bill {total = 0};
-                    for (var i = 0; i < order.Prices.Length; i++)
-                    {
-                        bill.total += (order.Prices[i]*order.Quantities[i]);
-                    }
-
-                    Console.WriteLine("Sans tva : " + bill.total.ToString());
-
-                    bill.total += bill.total*tva/100; //apply the tva
-
-                    Console.WriteLine("Avec tva : " + bill.total.ToString());
-
-                    //apply the reduces
-                    if (order.Reduction == "STANDARD")
-                    {
-                        if (bill.total >= 50000)
-                        {
-                            bill.total -= bill.total*0.15m;
-                        }
-                        else if (bill.total >= 10000)
-                        {
-                            bill.total -= bill.total*0.1m;
-                        }
-                        else if (bill.total >= 7000)
-                        {
-                            bill.total -= bill.total*0.07m;
-                        }
-                        else if (bill.total >= 5000)
-                        {
-                            bill.total -= bill.total*0.05m;
-                        }
-                        else if (bill.total >= 1000)
-                        {
-                            bill.total -= bill.total*0.03m;
-                        }
-                    }
-;
+                    AddTva(taxesDictionary, order, bill);
+                    
+                    SubstractReduce(order, bill);
+                    
                     // If you manage to get the result, return a Bill object (JSON serialization is done automagically)
                     // Else return a HTTP 404 error : return Negotiate.WithStatusCode(HttpStatusCode.NotFound);
-                    Console.WriteLine("Avec reduction : " + bill.total.ToString());
+                    
                     return bill;
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                     return null;
                     throw;
                 }
-                
-                
             };
 
             Post["/feedback"] = _ =>
@@ -122,6 +84,58 @@ namespace xCarpaccio.client
                 Console.WriteLine(feedback.Content);
                 return Negotiate.WithStatusCode(HttpStatusCode.OK);
             };
+        }
+
+        private static Bill CalculMttTotArt(Bill bill, Order order)
+        {
+            for (var i = 0; i < order.Prices.Length; i++)
+            {
+                bill.total += (order.Prices[i]*order.Quantities[i]);
+            }
+            Console.WriteLine("Total : " + bill.total.ToString());
+            return bill;
+        }
+
+        private static void AddTva(Dictionary<string, int> taxesDictionary, Order order, Bill bill)
+        {
+            var tva = 0;
+            if (taxesDictionary.ContainsKey(order.Country))
+            {
+                tva = taxesDictionary[order.Country]; //get the tva for the country
+            }
+            bill.total += bill.total * tva / 100; //apply the tva
+
+            Console.WriteLine("Avec tva : " + bill.total.ToString());
+        }
+
+        private static void SubstractReduce(Order order, Bill bill)
+        {
+            //apply the reduces
+            if (order.Reduction == "STANDARD")
+            {
+                if (bill.total >= 50000)
+                {
+                    bill.total -= bill.total * 0.15m;
+                }
+                else if (bill.total >= 10000)
+                {
+                    bill.total -= bill.total * 0.1m;
+                }
+                else if (bill.total >= 7000)
+                {
+                    bill.total -= bill.total * 0.07m;
+                }
+                else if (bill.total >= 5000)
+                {
+                    bill.total -= bill.total * 0.05m;
+                }
+                else if (bill.total >= 1000)
+                {
+                    bill.total -= bill.total * 0.03m;
+                }
+            }
+
+            Console.WriteLine("Avec reduction : " + bill.total.ToString());
         }
     }
 }
