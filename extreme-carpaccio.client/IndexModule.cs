@@ -26,11 +26,11 @@ namespace xCarpaccio.client
                 //TODO: do something with order and return a bill if possible
                 try
                 {
-                    bill.CalculMttTotal(bill, order);
+                    bill.CalculMttTotal(bill, order); //calcul le montant total
 
-                    bill.AddTva(bill, order);
+                    bill.AddTva(bill, order); //ajoute la tva si il y en a une
                     
-                    bill.SubstractReduce(bill, order);
+                    bill.SubstractReduce(bill, order); //soustrait la reduction si il y en a une
                     
                     // If you manage to get the result, return a Bill object (JSON serialization is done automagically)
                     // Else return a HTTP 404 error : return Negotiate.WithStatusCode(HttpStatusCode.NotFound);

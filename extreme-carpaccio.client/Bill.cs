@@ -63,27 +63,30 @@ namespace xCarpaccio.client
         public void SubstractReduce(Bill bill, Order order)
         {
             //apply the reduces
-            if (order.Reduction == "STANDARD")
+            if (order.Reduction != "PAY THE PRICE") //il y a une reduction
             {
-                if (bill.total >= 50000)
+                if (order.Reduction == "STANDARD")
                 {
-                    bill.total -= bill.total * 0.15m;
-                }
-                else if (bill.total >= 10000)
-                {
-                    bill.total -= bill.total * 0.1m;
-                }
-                else if (bill.total >= 7000)
-                {
-                    bill.total -= bill.total * 0.07m;
-                }
-                else if (bill.total >= 5000)
-                {
-                    bill.total -= bill.total * 0.05m;
-                }
-                else if (bill.total >= 1000)
-                {
-                    bill.total -= bill.total * 0.03m;
+                    if (bill.total >= 50000)
+                    {
+                        bill.total -= bill.total * 0.15m;
+                    }
+                    else if (bill.total >= 10000)
+                    {
+                        bill.total -= bill.total * 0.1m;
+                    }
+                    else if (bill.total >= 7000)
+                    {
+                        bill.total -= bill.total * 0.07m;
+                    }
+                    else if (bill.total >= 5000)
+                    {
+                        bill.total -= bill.total * 0.05m;
+                    }
+                    else if (bill.total >= 1000)
+                    {
+                        bill.total -= bill.total * 0.03m;
+                    }
                 }
             }
 
