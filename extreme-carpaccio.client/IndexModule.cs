@@ -20,12 +20,12 @@ namespace xCarpaccio.client
                 {
                     Console.WriteLine("Order received: {0}", reader.ReadToEnd());
                 }
-
-                var order = this.Bind<Order>();
-                Bill bill = new Bill { total = 0 };
-                //TODO: do something with order and return a bill if possible
                 try
                 {
+                    var order = this.Bind<Order>();
+                    Bill bill = new Bill { total = 0 };
+                    //TODO: do something with order and return a bill if possible
+                
                     bill.CalculMttTotal(bill, order); //calcul le montant total
 
                     bill.AddTva(bill, order); //ajoute la tva si il y en a une
